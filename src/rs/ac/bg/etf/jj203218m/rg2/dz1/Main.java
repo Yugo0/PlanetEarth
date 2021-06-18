@@ -1,5 +1,8 @@
 package rs.ac.bg.etf.jj203218m.rg2.dz1;
 
+import org.joml.Matrix4f;
+import org.joml.Vector3f;
+
 import com.jogamp.newt.event.MouseEvent;
 import com.jogamp.newt.event.MouseListener;
 import com.jogamp.newt.event.WindowAdapter;
@@ -19,7 +22,16 @@ public class Main implements GLEventListener, MouseListener
 	private static final int FPS = 60;
 	private static final String TITLE = "Earth";
 	private int width = 800, height = 600;
-	private static final int DIVISION_COUNT = 32;
+	private static final int DIVISION_COUNT = 1;
+	private int lastX, lastY;
+	private float fov = 90f;
+
+	private Vector3f cameraFront = new Vector3f(0f, 0f, 1f);
+	private final float cameraDistance = 2f;
+	private Vector3f cameraPosition = cameraFront.mul(-1 * cameraDistance);
+	private final Vector3f cameraTarget = new Vector3f(0f, 0f, 0f);
+	private final Vector3f cameraUp = new Vector3f(0f, 1f, 0f);
+	private float yaw = -90f, pitch = 0f;
 
 	private Earth earth;
 
@@ -62,8 +74,18 @@ public class Main implements GLEventListener, MouseListener
 	@Override
 	public void mouseDragged(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
+		yaw += e.getX() - lastX;
+		pitch = Math.min(Math.max(pitch - (e.getY() - lastY), -90f), 90f);
 
+		Vector3f direction = new Vector3f();
+		direction.x = (float) (Math.cos(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+		direction.y = (float) Math.sin(Math.toRadians(pitch));
+		direction.z = (float) (Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
+		cameraFront = direction.normalize();
+		cameraPosition = cameraFront.mul(-1 * cameraDistance);
+
+		lastX = e.getX();
+		lastY = e.getY();
 	}
 
 	@Override
@@ -77,8 +99,8 @@ public class Main implements GLEventListener, MouseListener
 	@Override
 	public void mouseMoved(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-
+		lastX = e.getX();
+		lastY = e.getY();
 	}
 
 	@Override
@@ -92,8 +114,7 @@ public class Main implements GLEventListener, MouseListener
 	@Override
 	public void mouseWheelMoved(MouseEvent e)
 	{
-		// TODO Auto-generated method stub
-
+		fov = Math.min(Math.max(fov - e.getRotation()[1], 1f), 179f);
 	}
 
 	@Override
@@ -103,7 +124,17 @@ public class Main implements GLEventListener, MouseListener
 
 		gl.glClearColor(0f, 0f, 0f, 0f);
 		gl.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
-		
+
+		Matrix4f view = new Matrix4f();
+		view.lookAt(cameraPosition, cameraTarget, cameraUp);
+
+		Matrix4f projection = new Matrix4f();
+		projection.perspective((float) Math.toRadians(fov), (float) width / height, 0.1f, 10f);
+
+		earth.getShaderProgram().use(drawable);
+		earth.getShaderProgram().setMatrix4f(drawable, "view", view);
+		earth.getShaderProgram().setMatrix4f(drawable, "projection", projection);
+
 		earth.display(drawable);
 	}
 
@@ -131,7 +162,7 @@ public class Main implements GLEventListener, MouseListener
 
 		this.width = width;
 		this.height = height;
-		
+
 		gl.glViewport(0, 0, width, height);
 	}
 
