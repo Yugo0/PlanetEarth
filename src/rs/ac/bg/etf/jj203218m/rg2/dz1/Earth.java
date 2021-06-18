@@ -20,7 +20,7 @@ public class Earth extends GraphicObject
 	}
 
 	@Override
-	public void initializeBuffers(GLAutoDrawable drawable)
+	public void initialize(GLAutoDrawable drawable)
 	{
 		GL4 gl = drawable.getGL().getGL4();
 
@@ -38,8 +38,6 @@ public class Earth extends GraphicObject
 	public void display(GLAutoDrawable drawable)
 	{
 		GL4 gl = drawable.getGL().getGL4();
-
-		shaderProgram.use(drawable);
 
 		gl.glBindVertexArray(vaoId);
 		gl.glDrawElements(GL4.GL_QUADS, 8, GL4.GL_UNSIGNED_INT, 0);

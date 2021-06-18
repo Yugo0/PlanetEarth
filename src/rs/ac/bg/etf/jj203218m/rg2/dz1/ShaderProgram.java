@@ -45,7 +45,7 @@ public class ShaderProgram
 		vertex = gl.glCreateShader(GL4.GL_VERTEX_SHADER);
 		gl.glShaderSource(vertex, 1, vertexShaderSource, null);
 		gl.glCompileShader(vertex);
-		
+
 		gl.glGetShaderiv(vertex, GL4.GL_COMPILE_STATUS, status);
 		if (status.get(0) == GL4.GL_FALSE)
 		{
@@ -61,7 +61,7 @@ public class ShaderProgram
 			String strInfoLog = new String(bytes);
 			System.err.println(strInfoLog);
 		}
-		
+
 		fragment = gl.glCreateShader(GL4.GL_FRAGMENT_SHADER);
 		gl.glShaderSource(fragment, 1, fragmentShaderSource, null);
 		gl.glCompileShader(fragment);
@@ -81,12 +81,12 @@ public class ShaderProgram
 			String strInfoLog = new String(bytes);
 			System.err.println(strInfoLog);
 		}
-		
+
 		id = gl.glCreateProgram();
 		gl.glAttachShader(id, vertex);
 		gl.glAttachShader(id, fragment);
 		gl.glLinkProgram(id);
-		
+
 		gl.glGetShaderiv(id, GL4.GL_LINK_STATUS, status);
 		if (status.get(0) == GL4.GL_FALSE)
 		{
@@ -102,32 +102,39 @@ public class ShaderProgram
 			String strInfoLog = new String(bytes);
 			System.err.println(strInfoLog);
 		}
-		
+
 		gl.glDeleteShader(vertex);
 		gl.glDeleteShader(fragment);
 	}
-	
+
 	public void setMatrix4f(GLAutoDrawable drawable, String name, Matrix4f matrix)
 	{
 		GL4 gl = drawable.getGL().getGL4();
-		
+
 		FloatBuffer matrixBuffer = Buffers.newDirectFloatBuffer(16);
 		matrix.get(matrixBuffer);
 		int location = gl.glGetUniformLocation(id, name);
 		gl.glUniformMatrix4fv(location, 1, false, matrixBuffer);
 	}
-	
+
+	public void setInt(GLAutoDrawable drawable, String name, int value)
+	{
+		GL4 gl = drawable.getGL().getGL4();
+
+		gl.glUniform1i(gl.glGetUniformLocation(id, name), value);
+	}
+
 	public void delete(GLAutoDrawable drawable)
 	{
 		GL4 gl = drawable.getGL().getGL4();
-		
+
 		gl.glDeleteProgram(id);
 	}
-	
+
 	public void use(GLAutoDrawable drawable)
 	{
 		GL4 gl = drawable.getGL().getGL4();
-		
+
 		gl.glUseProgram(id);
 	}
 

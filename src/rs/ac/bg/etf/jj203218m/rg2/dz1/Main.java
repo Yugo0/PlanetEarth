@@ -132,13 +132,20 @@ public class Main implements GLEventListener, MouseListener
 		Matrix4f projection = new Matrix4f();
 		projection.perspective((float) Math.toRadians(fov), (float) width / height, 0.1f, 10f);
 
+		Matrix4f projectionSky = new Matrix4f();
+		projectionSky.perspective((float) Math.toRadians(60), (float) width / height, 0.1f, 10f);
+
+		earth.getShaderProgram().use(drawable);
+
 		earth.getShaderProgram().setMatrix4f(drawable, "view", view);
 		earth.getShaderProgram().setMatrix4f(drawable, "projection", projection);
-		
+
 		earth.display(drawable);
 
+		skybox.getShaderProgram().use(drawable);
+
 		skybox.getShaderProgram().setMatrix4f(drawable, "view", view);
-		skybox.getShaderProgram().setMatrix4f(drawable, "projection", projection);
+		skybox.getShaderProgram().setMatrix4f(drawable, "projection", projectionSky);
 
 		skybox.display(drawable);
 	}
@@ -156,9 +163,15 @@ public class Main implements GLEventListener, MouseListener
 
 		gl.glEnable(GL4.GL_DEPTH_TEST);
 
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
+
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
+
 		earth = new Earth(drawable, DIVISION_COUNT);
 		earth.init(drawable);
-		
+
 		skybox = new Skybox(drawable);
 		skybox.init(drawable);
 	}

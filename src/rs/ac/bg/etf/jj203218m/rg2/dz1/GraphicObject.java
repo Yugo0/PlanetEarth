@@ -1,9 +1,7 @@
 package rs.ac.bg.etf.jj203218m.rg2.dz1;
 
-import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 
-import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 
@@ -14,15 +12,22 @@ public abstract class GraphicObject
 	protected IntBuffer vao, vbo, ebo;
 	protected int vaoId, vboId, eboId;
 	
+	private static int textureNumber = 0;
+	
 	public GraphicObject(GLAutoDrawable drawable, String vertexPath, String fragmentPath)
 	{
 		shaderProgram = new ShaderProgram(drawable, vertexPath, fragmentPath);
 	}
 	
-	public abstract void initializeBuffers(GLAutoDrawable drawable);
+	public abstract void initialize(GLAutoDrawable drawable);
 
 	public abstract void display(GLAutoDrawable drawable);
 
+	public static int getTextureNumber()
+	{
+		return textureNumber++;
+	}
+	
 	public void init(GLAutoDrawable drawable)
 	{
 		GL4 gl = drawable.getGL().getGL4();
@@ -42,7 +47,7 @@ public abstract class GraphicObject
 		eboId = ebo.get(0);
 		gl.glBindBuffer(GL4.GL_ELEMENT_ARRAY_BUFFER, eboId);
 
-		initializeBuffers(drawable);
+		initialize(drawable);
 
 		shaderProgram.use(drawable);
 	}
