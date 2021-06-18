@@ -9,8 +9,9 @@ import com.jogamp.opengl.GLAutoDrawable;
 
 public class Earth extends GraphicObject
 {
-	float[] vertices = { -0.5f, -0.5f, 0.0f, 0.5f, -0.5f, 0.0f, 0.5f, 0.5f, 0.0f, -0.5f, 0.5f, 0.0f };
-	int[] indices = { 0, 1, 2, 3 };
+	float[] vertices = { -1f, -1f, -1f, 1f, -1f, -1f, 1f, 1f, -1f, -1f, 1f, -1f,
+			-1f, -1f, 1f, 1f, -1f, 1f, 1f, 1f, 1f, -1f, 1f, 1f};
+	int[] indices = { 0, 1, 2, 3, 7, 6, 5, 4 };
 
 	protected int vaoId, vboId, eboId;
 
@@ -56,10 +57,10 @@ public class Earth extends GraphicObject
 	{
 		GL4 gl = drawable.getGL().getGL4();
 
-//		shaderProgram.use(drawable);
+		shaderProgram.use(drawable);
 
 		gl.glBindVertexArray(vaoId);
-		gl.glDrawElements(GL4.GL_QUADS, 4, GL4.GL_UNSIGNED_INT, 0);
+		gl.glDrawElements(GL4.GL_QUADS, 8, GL4.GL_UNSIGNED_INT, 0);
 	}
 
 }

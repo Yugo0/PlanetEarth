@@ -31,7 +31,7 @@ public class Main implements GLEventListener, MouseListener
 	private Vector3f cameraPosition = cameraFront.mul(-1 * cameraDistance);
 	private final Vector3f cameraTarget = new Vector3f(0f, 0f, 0f);
 	private final Vector3f cameraUp = new Vector3f(0f, 1f, 0f);
-	private float yaw = -90f, pitch = 0f;
+	private float yaw = 90f, pitch = 0f;
 
 	private Earth earth;
 
@@ -131,7 +131,6 @@ public class Main implements GLEventListener, MouseListener
 		Matrix4f projection = new Matrix4f();
 		projection.perspective((float) Math.toRadians(fov), (float) width / height, 0.1f, 10f);
 
-		earth.getShaderProgram().use(drawable);
 		earth.getShaderProgram().setMatrix4f(drawable, "view", view);
 		earth.getShaderProgram().setMatrix4f(drawable, "projection", projection);
 
