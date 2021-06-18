@@ -2,10 +2,13 @@ package rs.ac.bg.etf.jj203218m.rg2.dz1;
 
 import java.io.IOException;
 import java.nio.ByteBuffer;
+import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
+
+import org.joml.Matrix4f;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
@@ -102,5 +105,34 @@ public class ShaderProgram
 		
 		gl.glDeleteShader(vertex);
 		gl.glDeleteShader(fragment);
+	}
+	
+	public void setMatrix4f(GLAutoDrawable drawable, String name, Matrix4f matrix)
+	{
+		GL4 gl = drawable.getGL().getGL4();
+		
+		FloatBuffer matrixBuffer = Buffers.newDirectFloatBuffer(16);
+		matrix.get(matrixBuffer);
+		int location = gl.glGetUniformLocation(id, name);
+		gl.glUniformMatrix4fv(location, 1, false, matrixBuffer);
+	}
+	
+	public void delete(GLAutoDrawable drawable)
+	{
+		GL4 gl = drawable.getGL().getGL4();
+		
+		gl.glDeleteProgram(id);
+	}
+	
+	public void use(GLAutoDrawable drawable)
+	{
+		GL4 gl = drawable.getGL().getGL4();
+		
+		gl.glUseProgram(id);
+	}
+
+	public int getId()
+	{
+		return id;
 	}
 }

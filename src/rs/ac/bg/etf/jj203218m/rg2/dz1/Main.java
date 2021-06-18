@@ -18,7 +18,10 @@ public class Main implements GLEventListener, MouseListener
 	private final FPSAnimator animator;
 	private static final int FPS = 60;
 	private static final String TITLE = "Earth";
-	private int windowWidth = 800, windowHeight = 600;
+	private int width = 800, height = 600;
+	private static final int DIVISION_COUNT = 32;
+
+	private Earth earth;
 
 	public Main()
 	{
@@ -44,8 +47,9 @@ public class Main implements GLEventListener, MouseListener
 		});
 		window.addGLEventListener(this);
 		window.addMouseListener(this);
-		window.setSize(windowWidth, windowHeight);
+		window.setSize(width, height);
 		window.setTitle(TITLE);
+		window.setResizable(false);
 		window.setVisible(true);
 
 		animator.start();
@@ -99,13 +103,14 @@ public class Main implements GLEventListener, MouseListener
 
 		gl.glClearColor(0f, 0f, 0f, 0f);
 		gl.glClear(GL4.GL_COLOR_BUFFER_BIT | GL4.GL_DEPTH_BUFFER_BIT);
+		
+		earth.display(drawable);
 	}
 
 	@Override
 	public void dispose(GLAutoDrawable drawable)
 	{
-		// TODO Auto-generated method stub
-
+		earth.dispose(drawable);
 	}
 
 	@Override
@@ -114,13 +119,20 @@ public class Main implements GLEventListener, MouseListener
 		GL4 gl = drawable.getGL().getGL4();
 
 		gl.glEnable(GL4.GL_DEPTH_TEST);
+
+		earth = new Earth(drawable, DIVISION_COUNT, "shaders/earth_vertex.shader", "shaders/earth_fragment.shader");
+		earth.init(drawable);
 	}
 
 	@Override
 	public void reshape(GLAutoDrawable drawable, int x, int y, int width, int height)
 	{
-		// TODO Auto-generated method stub
+		GL4 gl = drawable.getGL().getGL4();
 
+		this.width = width;
+		this.height = height;
+		
+		gl.glViewport(0, 0, width, height);
 	}
 
 	public static void main(String[] args)
