@@ -34,6 +34,7 @@ public class Main implements GLEventListener, MouseListener
 	private float yaw = 90f, pitch = 0f;
 
 	private Earth earth;
+	private Skybox skybox;
 
 	public Main()
 	{
@@ -114,7 +115,7 @@ public class Main implements GLEventListener, MouseListener
 	@Override
 	public void mouseWheelMoved(MouseEvent e)
 	{
-		fov = Math.min(Math.max(fov - e.getRotation()[1], 1f), 179f);
+		fov = Math.min(Math.max(fov - e.getRotation()[1], 1f), 170f);
 	}
 
 	@Override
@@ -133,8 +134,13 @@ public class Main implements GLEventListener, MouseListener
 
 		earth.getShaderProgram().setMatrix4f(drawable, "view", view);
 		earth.getShaderProgram().setMatrix4f(drawable, "projection", projection);
-
+		
 		earth.display(drawable);
+
+		skybox.getShaderProgram().setMatrix4f(drawable, "view", view);
+		skybox.getShaderProgram().setMatrix4f(drawable, "projection", projection);
+
+		skybox.display(drawable);
 	}
 
 	@Override
@@ -150,8 +156,11 @@ public class Main implements GLEventListener, MouseListener
 
 		gl.glEnable(GL4.GL_DEPTH_TEST);
 
-		earth = new Earth(drawable, DIVISION_COUNT, "shaders/earth_vertex.shader", "shaders/earth_fragment.shader");
+		earth = new Earth(drawable, DIVISION_COUNT);
 		earth.init(drawable);
+		
+		skybox = new Skybox(drawable);
+		skybox.init(drawable);
 	}
 
 	@Override

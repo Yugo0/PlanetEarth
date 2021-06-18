@@ -7,16 +7,15 @@ import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
 
-public class Earth extends GraphicObject
+public class Skybox extends GraphicObject
 {
-	float[] vertices = { -1f, -1f, -1f, 1f, -1f, -1f, 1f, 1f, -1f, -1f, 1f, -1f, -1f, -1f, 1f, 1f, -1f, 1f, 1f, 1f, 1f,
-			-1f, 1f, 1f };
-	int[] indices = { 0, 1, 2, 3, 7, 6, 5, 4 };
+	float[] vertices = { -3f, -3f, -3f, 3f, -3f, -3f, 3f, 3f, -3f, -3f, 3f, -3f, -3f, -3f, 3f, 3f, -3f, 3f, 3f, 3f, 3f,
+			-3f, 3f, 3f };
+	int[] indices = { 0, 3, 2, 1, 4, 5, 6, 7, 0, 1, 5, 4, 2, 3, 7, 6, 1, 2, 6, 5, 0, 4, 7, 3 };
 
-	public Earth(GLAutoDrawable drawable, int divisionCount)
+	public Skybox(GLAutoDrawable drawable)
 	{
-		super(drawable, "shaders/earth_vertex.shader", "shaders/earth_fragment.shader");
-		// TODO
+		super(drawable, "shaders/skybox_vertex.shader", "shaders/skybox_fragment.shader");
 	}
 
 	@Override
@@ -42,7 +41,7 @@ public class Earth extends GraphicObject
 		shaderProgram.use(drawable);
 
 		gl.glBindVertexArray(vaoId);
-		gl.glDrawElements(GL4.GL_QUADS, 8, GL4.GL_UNSIGNED_INT, 0);
+		gl.glDrawElements(GL4.GL_QUADS, 4 * indices.length, GL4.GL_UNSIGNED_INT, 0);
 	}
 
 }
