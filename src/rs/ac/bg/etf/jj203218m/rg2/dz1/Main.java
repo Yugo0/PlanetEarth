@@ -22,7 +22,7 @@ public class Main implements GLEventListener, MouseListener
 	private static final int FPS = 60;
 	private static final String TITLE = "Earth";
 	private int width = 800, height = 600;
-	private static final int DIVISION_COUNT = 1;
+	private static final int DIVISION_COUNT = 2;
 	private int lastX, lastY;
 	private float fov = 90f;
 
