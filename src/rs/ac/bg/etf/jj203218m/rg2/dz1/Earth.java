@@ -3,6 +3,8 @@ package rs.ac.bg.etf.jj203218m.rg2.dz1;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
+import java.util.LinkedList;
+import java.util.List;
 
 import org.joml.Vector3f;
 
@@ -33,7 +35,7 @@ public class Earth extends GraphicObject
 		vertices = new float[((divCount + 1) * (divCount + 1) + 4 * divCount * divCount
 				+ (divCount - 1) * (divCount - 1)) * 5];
 		indices = new int[6 * 4 * divCount * divCount];
-
+		
 		drawSide(new Vector3f(-1f, 1f, -1f), new Vector3f(1f, 0f, 0f), new Vector3f(0f, 0f, 1f), 2f, divCount);
 		drawSide(new Vector3f(1f, -1f, 1f), new Vector3f(-1f, 0f, 0f), new Vector3f(0f, 0f, -1f), 2f, divCount);
 		drawSide(new Vector3f(-1f, -1f, -1f), new Vector3f(1f, 0f, 0f), new Vector3f(0f, 1f, 0f), 2f, divCount);
@@ -82,10 +84,10 @@ public class Earth extends GraphicObject
 				Vector3f vec2 = new Vector3f(dir2).mulAdd(increment, vec1);
 				Vector3f vec3 = new Vector3f(dir2).mulAdd(increment, current);
 
-				updateArrays(current);
-				updateArrays(vec1);
-				updateArrays(vec2);
-				updateArrays(vec3);
+				updateLists(current);
+				updateLists(vec1);
+				updateLists(vec2);
+				updateLists(vec3);
 
 				current = new Vector3f(dir1).mulAdd(increment, current);
 			}
@@ -94,8 +96,10 @@ public class Earth extends GraphicObject
 		}
 	}
 
-	private void updateArrays(Vector3f vector)
+	private void updateLists(Vector3f inVector)
 	{
+		Vector3f vector = new Vector3f(inVector);
+		vector.normalize();
 		FloatTrio trio = new FloatTrio(vector);
 
 		if (!map.containsKey(trio))
@@ -111,7 +115,6 @@ public class Earth extends GraphicObject
 
 			vertexOffset += 5;
 		}
-		int temp = map.get(trio);
 		indices[indexOffset++] = map.get(trio);
 	}
 }

@@ -4,7 +4,7 @@ import org.joml.Vector3f;
 
 public class FloatTrio
 {
-	private static final float TRESHOLD = 0.001f;
+	private static final float TRESHOLD = 0.00001f;
 
 	public float first;
 	public float second;
@@ -27,7 +27,7 @@ public class FloatTrio
 	@Override
 	public int hashCode()
 	{
-		return Float.hashCode(first) ^ Float.hashCode(first) ^ Float.hashCode(second) ^ Float.hashCode(third);
+		return Float.hashCode(first) ^ Float.hashCode(second) ^ Float.hashCode(third);
 	}
 
 	@Override
