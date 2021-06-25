@@ -9,6 +9,7 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 import org.joml.Matrix4f;
+import org.joml.Vector3f;
 
 import com.jogamp.common.nio.Buffers;
 import com.jogamp.opengl.GL4;
@@ -115,6 +116,14 @@ public class ShaderProgram
 		matrix.get(matrixBuffer);
 		int location = gl.glGetUniformLocation(id, name);
 		gl.glUniformMatrix4fv(location, 1, false, matrixBuffer);
+	}
+	
+	public void setVector3f(GLAutoDrawable drawable, String name, Vector3f vector)
+	{
+		GL4 gl = drawable.getGL().getGL4();
+
+		int location = gl.glGetUniformLocation(id, name);
+		gl.glUniform3f(location, vector.x, vector.y, vector.z);
 	}
 
 	public void setInt(GLAutoDrawable drawable, String name, int value)

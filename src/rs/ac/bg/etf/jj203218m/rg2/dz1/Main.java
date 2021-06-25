@@ -24,10 +24,10 @@ public class Main implements GLEventListener, MouseListener
 	private int width = 800, height = 600;
 	private static final int DIVISION_COUNT = 32;
 	private int lastX, lastY;
-	private float fov = 90f;
+	private float fov = 45f;
 
 	private Vector3f cameraFront = new Vector3f(0f, 0f, 1f);
-	private final float cameraDistance = 2f;
+	private final float cameraDistance = 4f;
 	private Vector3f cameraPosition = cameraFront.mul(-1 * cameraDistance);
 	private final Vector3f cameraTarget = new Vector3f(0f, 0f, 0f);
 	private final Vector3f cameraUp = new Vector3f(0f, 1f, 0f);
@@ -115,7 +115,7 @@ public class Main implements GLEventListener, MouseListener
 	@Override
 	public void mouseWheelMoved(MouseEvent e)
 	{
-		fov = Math.min(Math.max(fov - e.getRotation()[1], 1f), 170f);
+		fov = Math.min(Math.max(fov - e.getRotation()[1], 1f), 178f);
 	}
 
 	@Override
@@ -133,13 +133,16 @@ public class Main implements GLEventListener, MouseListener
 		projection.perspective((float) Math.toRadians(fov), (float) width / height, 0.1f, 10f);
 
 		Matrix4f projectionSky = new Matrix4f();
-		projectionSky.perspective((float) Math.toRadians(60), (float) width / height, 0.1f, 10f);
+		projectionSky.perspective((float) Math.toRadians(60), (float) width / height, 0.1f, 100f);
+		
+		Vector3f lightPosition = new Vector3f(3f, 3f, -3f);
 
 		earth.getShaderProgram().use(drawable);
 		earth.activateAndBindTextures(drawable);
 
 		earth.getShaderProgram().setMatrix4f(drawable, "view", view);
 		earth.getShaderProgram().setMatrix4f(drawable, "projection", projection);
+		earth.getShaderProgram().setVector3f(drawable, "lightPos", lightPosition);
 
 		earth.display(drawable);
 

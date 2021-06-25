@@ -13,10 +13,10 @@ import com.jogamp.opengl.util.texture.TextureIO;
 
 public class Skybox extends GraphicObject
 {
-	private float[] vertices = { -2f, -2f, -2f, 2f / 4, 1f / 3, 2f, -2f, -2f, 1f / 4, 1f / 3, 2f, 2f, -2f, 1f / 4,
-			2f / 3, -2f, 2f, -2f, 2f / 4, 2f / 3, -2f, -2f, 2f, 3f / 4, 1f / 3, 2f, -2f, 2f, 4f / 4, 1f / 3, 2f, 2f, 2f,
-			4f / 4, 2f / 3, -2f, 2f, 2f, 3f / 4, 2f / 3, -2f, -2f, 2f, 2f / 4, 0f / 3, 2f, -2f, 2f, 1f / 4, 0f / 3, 2f,
-			2f, 2f, 1f / 4, 3f / 3, -2f, 2f, 2f, 2f / 4, 3f / 3, 2f, -2f, 2f, 0f / 4, 1f / 3, 2f, 2f, 2f, 0f / 4,
+	private float[] vertices = { -5f, -5f, -5f, 2f / 4, 1f / 3, 5f, -5f, -5f, 1f / 4, 1f / 3, 5f, 5f, -5f, 1f / 4,
+			2f / 3, -5f, 5f, -5f, 2f / 4, 2f / 3, -5f, -5f, 5f, 3f / 4, 1f / 3, 5f, -5f, 5f, 4f / 4, 1f / 3, 5f, 5f, 5f,
+			4f / 4, 2f / 3, -5f, 5f, 5f, 3f / 4, 2f / 3, -5f, -5f, 5f, 2f / 4, 0f / 3, 5f, -5f, 5f, 1f / 4, 0f / 3, 5f,
+			5f, 5f, 1f / 4, 3f / 3, -5f, 5f, 5f, 2f / 4, 3f / 3, 5f, -5f, 5f, 0f / 4, 1f / 3, 5f, 5f, 5f, 0f / 4,
 			2f / 3 };
 	private int[] indices = { 0, 3, 2, 1, 4, 5, 6, 7, 0, 1, 9, 8, 2, 3, 11, 10, 1, 2, 13, 12, 0, 4, 7, 3 };
 
