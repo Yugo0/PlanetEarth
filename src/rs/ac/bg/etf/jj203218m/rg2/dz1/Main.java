@@ -136,6 +136,7 @@ public class Main implements GLEventListener, MouseListener
 		projectionSky.perspective((float) Math.toRadians(60), (float) width / height, 0.1f, 10f);
 
 		earth.getShaderProgram().use(drawable);
+		earth.activateAndBindTextures(drawable);
 
 		earth.getShaderProgram().setMatrix4f(drawable, "view", view);
 		earth.getShaderProgram().setMatrix4f(drawable, "projection", projection);
@@ -143,6 +144,7 @@ public class Main implements GLEventListener, MouseListener
 		earth.display(drawable);
 
 		skybox.getShaderProgram().use(drawable);
+		skybox.activateAndBindTextures(drawable);
 
 		skybox.getShaderProgram().setMatrix4f(drawable, "view", view);
 		skybox.getShaderProgram().setMatrix4f(drawable, "projection", projectionSky);
@@ -162,12 +164,6 @@ public class Main implements GLEventListener, MouseListener
 		GL4 gl = drawable.getGL().getGL4();
 
 		gl.glEnable(GL4.GL_DEPTH_TEST);
-
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
-
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
 
 		earth = new Earth(drawable, DIVISION_COUNT);
 		earth.init(drawable);

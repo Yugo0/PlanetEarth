@@ -12,7 +12,7 @@ public abstract class GraphicObject
 	protected IntBuffer vao, vbo, ebo;
 	protected int vaoId, vboId, eboId;
 	
-	private static int textureNumber = 0;
+	protected int textureId;
 	
 	public GraphicObject(GLAutoDrawable drawable, String vertexPath, String fragmentPath)
 	{
@@ -22,11 +22,8 @@ public abstract class GraphicObject
 	public abstract void initialize(GLAutoDrawable drawable);
 
 	public abstract void display(GLAutoDrawable drawable);
-
-	public static int getTextureNumber()
-	{
-		return textureNumber++;
-	}
+	
+	public abstract void activateAndBindTextures(GLAutoDrawable drawable);
 	
 	public void init(GLAutoDrawable drawable)
 	{

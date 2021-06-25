@@ -13,9 +13,6 @@ import com.jogamp.opengl.util.texture.TextureIO;
 
 public class Skybox extends GraphicObject
 {
-	private int texNum;
-	private int textureId;
-
 	private float[] vertices = { -2f, -2f, -2f, 2f / 4, 1f / 3, 2f, -2f, -2f, 1f / 4, 1f / 3, 2f, 2f, -2f, 1f / 4,
 			2f / 3, -2f, 2f, -2f, 2f / 4, 2f / 3, -2f, -2f, 2f, 3f / 4, 1f / 3, 2f, -2f, 2f, 4f / 4, 1f / 3, 2f, 2f, 2f,
 			4f / 4, 2f / 3, -2f, 2f, 2f, 3f / 4, 2f / 3, -2f, -2f, 2f, 2f / 4, 0f / 3, 2f, -2f, 2f, 1f / 4, 0f / 3, 2f,
@@ -60,9 +57,14 @@ public class Skybox extends GraphicObject
 
 		textureId = texture.getTextureObject();
 
-		texNum = GraphicObject.getTextureNumber();
+		shaderProgram.use(drawable);
+		shaderProgram.setInt(drawable, "texture", 0);
+		
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
 
-		shaderProgram.setInt(drawable, "texture", texNum);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
 	}
 
 	@Override
@@ -70,11 +72,19 @@ public class Skybox extends GraphicObject
 	{
 		GL4 gl = drawable.getGL().getGL4();
 
-		gl.glActiveTexture(GL.GL_TEXTURE + texNum);
-		gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
+//		gl.glActiveTexture(GL.GL_TEXTURE + texNum);
+//		gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
 
 		gl.glBindVertexArray(vaoId);
 		gl.glDrawElements(GL4.GL_QUADS, 4 * indices.length, GL4.GL_UNSIGNED_INT, 0);
 	}
 
+	@Override
+	public void activateAndBindTextures(GLAutoDrawable drawable)
+	{
+		GL4 gl = drawable.getGL().getGL4();
+
+		gl.glActiveTexture(GL.GL_TEXTURE0);
+		gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
+	}
 }

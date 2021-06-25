@@ -1,5 +1,6 @@
 package rs.ac.bg.etf.jj203218m.rg2.dz1;
 
+import java.io.File;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
@@ -9,17 +10,25 @@ import java.util.List;
 import org.joml.Vector3f;
 
 import com.jogamp.common.nio.Buffers;
+import com.jogamp.opengl.GL;
 import com.jogamp.opengl.GL4;
 import com.jogamp.opengl.GLAutoDrawable;
+import com.jogamp.opengl.util.texture.Texture;
+import com.jogamp.opengl.util.texture.TextureIO;
 
 public class Earth extends GraphicObject
 {
 	private float[] vertices;
-	private int vertexOffset = 0;
 	private int[] indices;
-	private int indexOffset = 0;
-	private HashMap<FloatTrio, Integer> map;
-	private int entryNumber = 0;
+	private HashMap<FloatKey, Integer> map;
+	private int curretIndex = 0;
+	private List<Float> vertexList;
+	private List<Integer> indexList;
+
+	private enum TexCoordOption
+	{
+		STANDARD, END
+	}
 
 	public Earth(GLAutoDrawable drawable, int divCount)
 	{
@@ -32,16 +41,37 @@ public class Earth extends GraphicObject
 
 		map = new HashMap<>();
 
-		vertices = new float[((divCount + 1) * (divCount + 1) + 4 * divCount * divCount
-				+ (divCount - 1) * (divCount - 1)) * 5];
-		indices = new int[6 * 4 * divCount * divCount];
-		
-		drawSide(new Vector3f(-1f, 1f, -1f), new Vector3f(1f, 0f, 0f), new Vector3f(0f, 0f, 1f), 2f, divCount);
-		drawSide(new Vector3f(1f, -1f, 1f), new Vector3f(-1f, 0f, 0f), new Vector3f(0f, 0f, -1f), 2f, divCount);
+		vertexList = new LinkedList<>();
+		indexList = new LinkedList<>();
+
+//		vertices = new float[((divCount + 1) * (divCount + 1) + 4 * divCount * divCount
+//				+ (divCount - 1) * (divCount - 1)) * 5];
+//		indices = new int[6 * 4 * divCount * divCount];
+
+		drawSide(new Vector3f(1f, 1f, 1f), new Vector3f(0f, 0f, -1f), new Vector3f(-1f, 0f, 0f), 2f, divCount);
+		drawSide(new Vector3f(-1f, -1f, 1f), new Vector3f(0f, 0f, -1f), new Vector3f(1f, 0f, 0f), 2f, divCount);
 		drawSide(new Vector3f(-1f, -1f, -1f), new Vector3f(1f, 0f, 0f), new Vector3f(0f, 1f, 0f), 2f, divCount);
 		drawSide(new Vector3f(1f, 1f, 1f), new Vector3f(-1f, 0f, 0f), new Vector3f(0f, -1f, 0f), 2f, divCount);
 		drawSide(new Vector3f(-1f, -1f, 1f), new Vector3f(0f, 0f, -1f), new Vector3f(0f, 1f, 0f), 2f, divCount);
 		drawSide(new Vector3f(1f, 1f, -1f), new Vector3f(0f, 0f, 1f), new Vector3f(0f, -1f, 0f), 2f, divCount);
+
+		vertices = new float[vertexList.size()];
+
+		int count = 0;
+		for (Float value : vertexList)
+		{
+			vertices[count] = value;
+			count++;
+		}
+
+		indices = new int[indexList.size()];
+
+		count = 0;
+		for (Integer value : indexList)
+		{
+			indices[count] = value;
+			count++;
+		}
 	}
 
 	@Override
@@ -60,6 +90,30 @@ public class Earth extends GraphicObject
 
 		IntBuffer indexBuffer = Buffers.newDirectIntBuffer(indices, 0);
 		gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, indices.length * Integer.BYTES, indexBuffer, GL4.GL_STATIC_DRAW);
+
+		File texFile = new File("img/earth.jpg");
+
+		Texture texture = null;
+
+		try
+		{
+			texture = TextureIO.newTexture(texFile, true);
+		}
+		catch (Exception e)
+		{
+			e.printStackTrace();
+		}
+
+		textureId = texture.getTextureObject();
+
+		shaderProgram.use(drawable);
+		shaderProgram.setInt(drawable, "texture", 0);
+		
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
+
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
 	}
 
 	@Override
@@ -84,10 +138,27 @@ public class Earth extends GraphicObject
 				Vector3f vec2 = new Vector3f(dir2).mulAdd(increment, vec1);
 				Vector3f vec3 = new Vector3f(dir2).mulAdd(increment, current);
 
-				updateLists(current);
-				updateLists(vec1);
-				updateLists(vec2);
-				updateLists(vec3);
+				if (current.z == 0 && current.x < 0 && current.z > vec1.z)
+				{
+					updateLists(current, TexCoordOption.END);
+				}
+				else
+				{
+					updateLists(current, TexCoordOption.STANDARD);
+				}
+
+				updateLists(vec1, TexCoordOption.STANDARD);
+
+				updateLists(vec2, TexCoordOption.STANDARD);
+
+				if (vec3.z == 0 && vec3.x < 0 && vec3.z > vec2.z)
+				{
+					updateLists(vec3, TexCoordOption.END);
+				}
+				else
+				{
+					updateLists(vec3, TexCoordOption.STANDARD);
+				}
 
 				current = new Vector3f(dir1).mulAdd(increment, current);
 			}
@@ -96,25 +167,38 @@ public class Earth extends GraphicObject
 		}
 	}
 
-	private void updateLists(Vector3f inVector)
+	@Override
+	public void activateAndBindTextures(GLAutoDrawable drawable)
+	{
+		GL4 gl = drawable.getGL().getGL4();
+
+		gl.glActiveTexture(GL.GL_TEXTURE0);
+		gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
+	}
+
+	private void updateLists(Vector3f inVector, TexCoordOption option)
 	{
 		Vector3f vector = new Vector3f(inVector);
 		vector.normalize();
-		FloatTrio trio = new FloatTrio(vector);
 
-		if (!map.containsKey(trio))
+		float u = option == TexCoordOption.STANDARD
+				? (float) ((Math.atan2(-vector.z, vector.x) + Math.PI) / (2 * Math.PI))
+				: 1f;
+		float v = (float) (Math.acos(-vector.y) / Math.PI);
+
+		FloatKey key = new FloatKey(vector, u, v);
+
+		if (!map.containsKey(key))
 		{
-			map.put(trio, entryNumber);
-			entryNumber++;
+			map.put(key, curretIndex);
+			curretIndex++;
 
-			vertices[vertexOffset] = vector.x;
-			vertices[vertexOffset + 1] = vector.y;
-			vertices[vertexOffset + 2] = vector.z;
-
-			// TODO - texture coordinates
-
-			vertexOffset += 5;
+			vertexList.add(vector.x);
+			vertexList.add(vector.y);
+			vertexList.add(vector.z);
+			vertexList.add(u);
+			vertexList.add(v);
 		}
-		indices[indexOffset++] = map.get(trio);
+		indexList.add(map.get(key));
 	}
 }
