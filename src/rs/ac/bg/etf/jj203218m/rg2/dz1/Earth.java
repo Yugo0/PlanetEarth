@@ -1,11 +1,15 @@
 package rs.ac.bg.etf.jj203218m.rg2.dz1;
 
+import java.awt.image.BufferedImage;
 import java.io.File;
+import java.io.IOException;
 import java.nio.FloatBuffer;
 import java.nio.IntBuffer;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+
+import javax.imageio.ImageIO;
 
 import org.joml.Vector3f;
 
@@ -24,6 +28,8 @@ public class Earth extends GraphicObject
 	private int curretIndex = 0;
 	private List<Float> vertexList;
 	private List<Integer> indexList;
+	private BufferedImage heightMap;
+	private final float heightStep = 8848.86f / 12742000 / 255;
 
 	private enum TexCoordOption
 	{
@@ -44,9 +50,14 @@ public class Earth extends GraphicObject
 		vertexList = new LinkedList<>();
 		indexList = new LinkedList<>();
 
-//		vertices = new float[((divCount + 1) * (divCount + 1) + 4 * divCount * divCount
-//				+ (divCount - 1) * (divCount - 1)) * 5];
-//		indices = new int[6 * 4 * divCount * divCount];
+		try
+		{
+			heightMap = ImageIO.read(new File("img/heightMap.jpg"));
+		}
+		catch (IOException e)
+		{
+			e.printStackTrace();
+		}
 
 		drawSide(new Vector3f(1f, 1f, 1f), new Vector3f(0f, 0f, -1f), new Vector3f(-1f, 0f, 0f), 2f, divCount);
 		drawSide(new Vector3f(-1f, -1f, 1f), new Vector3f(0f, 0f, -1f), new Vector3f(1f, 0f, 0f), 2f, divCount);
@@ -108,7 +119,7 @@ public class Earth extends GraphicObject
 
 		shaderProgram.use(drawable);
 		shaderProgram.setInt(drawable, "texture", 0);
-		
+
 		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
 		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
 
@@ -185,6 +196,11 @@ public class Earth extends GraphicObject
 				? (float) ((Math.atan2(-vector.z, vector.x) + Math.PI) / (2 * Math.PI))
 				: 1f;
 		float v = (float) (Math.acos(-vector.y) / Math.PI);
+
+		int heightValue = heightMap.getRGB((int) (u * (heightMap.getWidth() - 1)),
+				(int) ((1f - v) * (heightMap.getHeight() - 1))) & 0xff;
+
+		vector.mul(1 + heightValue * heightStep);
 
 		FloatKey key = new FloatKey(vector, u, v);
 
