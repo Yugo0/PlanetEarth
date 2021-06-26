@@ -22,7 +22,7 @@ public class Main implements GLEventListener, MouseListener
 	private static final int FPS = 60;
 	private static final String TITLE = "Earth";
 	private int width = 800, height = 600;
-	private static final int DIVISION_COUNT = 32;
+	private static final int DIVISION_COUNT = 128;
 	private int lastX, lastY;
 	private float fov = 45f;
 
@@ -83,7 +83,7 @@ public class Main implements GLEventListener, MouseListener
 		direction.y = (float) Math.sin(Math.toRadians(pitch));
 		direction.z = (float) (Math.sin(Math.toRadians(yaw)) * Math.cos(Math.toRadians(pitch)));
 		cameraFront = direction.normalize();
-		cameraPosition = cameraFront.mul(-1 * cameraDistance);
+		cameraPosition = cameraFront.mul(-cameraDistance);
 
 		lastX = e.getX();
 		lastY = e.getY();
@@ -143,6 +143,7 @@ public class Main implements GLEventListener, MouseListener
 		earth.getShaderProgram().setMatrix4f(drawable, "view", view);
 		earth.getShaderProgram().setMatrix4f(drawable, "projection", projection);
 		earth.getShaderProgram().setVector3f(drawable, "lightPos", lightPosition);
+		earth.getShaderProgram().setVector3f(drawable, "viewPos", new Vector3f(0f, 0f, -cameraDistance));
 
 		earth.display(drawable);
 

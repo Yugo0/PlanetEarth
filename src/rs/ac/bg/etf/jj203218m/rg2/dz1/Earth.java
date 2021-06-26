@@ -28,8 +28,10 @@ public class Earth extends GraphicObject
 	private int curretIndex = 0;
 	private List<Float> vertexList;
 	private List<Integer> indexList;
+	private int textureId;
+	private int specularId;
 	private BufferedImage heightMap;
-	private final float heightStep = 8848.86f / 12742000 / 255;
+	private final float heightStep = 50 * 8848.86f / 12742000 / 255;
 
 	private enum TexCoordOption
 	{
@@ -103,12 +105,15 @@ public class Earth extends GraphicObject
 		gl.glBufferData(GL4.GL_ELEMENT_ARRAY_BUFFER, indices.length * Integer.BYTES, indexBuffer, GL4.GL_STATIC_DRAW);
 
 		File texFile = new File("img/earth.jpg");
+		File specFile = new File("img/specularMap.jpg");
 
 		Texture texture = null;
+		Texture specularMap = null;
 
 		try
 		{
 			texture = TextureIO.newTexture(texFile, true);
+			specularMap = TextureIO.newTexture(specFile, true);
 		}
 		catch (Exception e)
 		{
@@ -116,15 +121,11 @@ public class Earth extends GraphicObject
 		}
 
 		textureId = texture.getTextureObject();
+		specularId = specularMap.getTextureObject();
 
 		shaderProgram.use(drawable);
 		shaderProgram.setInt(drawable, "texture", 0);
-
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
-
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
-		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
+		shaderProgram.setInt(drawable, "specularMap", 1);
 	}
 
 	@Override
@@ -185,6 +186,21 @@ public class Earth extends GraphicObject
 
 		gl.glActiveTexture(GL.GL_TEXTURE0);
 		gl.glBindTexture(GL4.GL_TEXTURE_2D, textureId);
+
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
+
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
+
+		gl.glActiveTexture(GL.GL_TEXTURE1);
+		gl.glBindTexture(GL4.GL_TEXTURE_2D, specularId);
+
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_S, GL4.GL_REPEAT);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_WRAP_T, GL4.GL_REPEAT);
+
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MIN_FILTER, GL4.GL_LINEAR);
+		gl.glTexParameteri(GL4.GL_TEXTURE_2D, GL4.GL_TEXTURE_MAG_FILTER, GL4.GL_LINEAR);
 	}
 
 	private void updateLists(Vector3f inVector, TexCoordOption option)

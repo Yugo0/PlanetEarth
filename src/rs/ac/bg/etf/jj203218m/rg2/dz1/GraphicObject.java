@@ -12,8 +12,6 @@ public abstract class GraphicObject
 	protected IntBuffer vao, vbo, ebo;
 	protected int vaoId, vboId, eboId;
 	
-	protected int textureId;
-	
 	public GraphicObject(GLAutoDrawable drawable, String vertexPath, String fragmentPath)
 	{
 		shaderProgram = new ShaderProgram(drawable, vertexPath, fragmentPath);
